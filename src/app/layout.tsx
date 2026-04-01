@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Acme - Build Faster with Intelligent Tools",
-  description: "Create stunning products in half the time. Our platform combines powerful features with an intuitive interface.",
+  title: "Focusmate - Dein persönlicher ADHD Coach",
+  description: "Monatelange Wartezeiten auf professionelle Unterstützung? Unser AI-Agent versteht dein ADHD-Gehirn und begleitet dich täglich — basierend auf echten Methoden verifizierter Coaches.",
 };
 
 export default function RootLayout({
