@@ -1,19 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Lora, Raleway } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const lora = Lora({
+  variable: "--font-lora",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const raleway = Raleway({
+  variable: "--font-raleway",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Focusmate - Dein persönlicher ADHD Coach",
+  title: "FocusCall — Dein persönlicher ADHD Coach",
   description: "Monatelange Wartezeiten auf professionelle Unterstützung? Unser AI-Agent versteht dein ADHD-Gehirn und begleitet dich täglich — basierend auf echten Methoden verifizierter Coaches.",
 };
 
@@ -23,9 +25,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="de">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${lora.variable} ${raleway.variable} antialiased`}
+        style={{ fontFamily: 'var(--font-raleway), system-ui, sans-serif' }}
+        suppressHydrationWarning
       >
         {children}
       </body>

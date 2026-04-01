@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FocusCall — Dein ADHS-Coach, der nie schläft</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0E0E10;
+    --bg-elevated: #18181C;
+    --bg-card: #1E1E24;
+    --surface: #26262E;
+    --border: #333340;
+    --text: #F0EDE8;
+    --text-muted: #9994A1;
+    --text-dim: #6B6575;
+    --accent: #F5A623;
+    --accent-glow: #F5A62340;
+    --accent-soft: #F5A62318;
+    --green: #4ADE80;
+    --red-soft: #FF6B6B;
+    --blue-soft: #6BB3FF;
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; font-size: 16px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.65;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ---- NOISE OVERLAY ---- */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ---- UTILITY ---- */
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+
+  /* ---- NAV ---- */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: #0E0E10CC;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+  }
+  nav .container {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .logo {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.35rem;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--text); }
+  .nav-links { display: flex; gap: 28px; align-items: center; }
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    background: var(--accent) !important;
+    color: var(--bg) !important;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 24px var(--accent-glow); }
+
+  /* ---- HERO ---- */
+  .hero {
+    padding: 160px 0 100px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 28px;
+    animation: fadeInUp 0.6s ease both;
+  }
+  .hero-badge::before { content: '🧠'; }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    max-width: 780px;
+    margin-bottom: 24px;
+    animation: fadeInUp 0.6s ease 0.1s both;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+    animation: fadeInUp 0.6s ease 0.2s both;
+  }
+  .hero-cta-group {
+    display: flex; gap: 16px; align-items: center; flex-wrap: wrap;
+    animation: fadeInUp 0.6s ease 0.3s both;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 16px 32px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px var(--accent-glow); }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 16px 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
+
+  .hero-proof {
+    margin-top: 48px;
+    display: flex; gap: 40px; flex-wrap: wrap;
+    animation: fadeInUp 0.6s ease 0.4s both;
+  }
+  .hero-proof-item {
+    display: flex; flex-direction: column;
+  }
+  .hero-proof-item strong {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  .hero-proof-item span {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+
+  /* ---- PAIN SECTION ---- */
+  .pain {
+    padding: 100px 0;
+    border-top: 1px solid var(--border);
+  }
+  .pain-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--red-soft);
+    margin-bottom: 16px;
+  }
+  .pain h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    max-width: 640px;
+    margin-bottom: 56px;
+  }
+  .pain-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  .pain-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .pain-card:hover { border-color: var(--text-dim); transform: translateY(-2px); }
+  .pain-card .time {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    font-weight: 500;
+    margin-bottom: 12px;
+    font-family: var(--font-body);
+    letter-spacing: 0.04em;
+  }
+  .pain-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+    line-height: 1.35;
+  }
+  .pain-card p {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+
+  /* ---- SOLUTION ---- */
+  .solution {
+    padding: 100px 0;
+    border-top: 1px solid var(--border);
+    position: relative;
+  }
+  .solution::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .solution-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--green);
+    margin-bottom: 16px;
+  }
+  .solution h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    max-width: 640px;
+    margin-bottom: 24px;
+  }
+  .solution > .container > p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    max-width: 560px;
+    margin-bottom: 56px;
+    line-height: 1.7;
+  }
+  .solution-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+  }
+  .step-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 28px;
+    position: relative;
+  }
+  .step-num {
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--accent);
+    opacity: 0.2;
+    position: absolute;
+    top: 16px; right: 24px;
+    line-height: 1;
+  }
+  .step-card h3 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    line-height: 1.35;
+  }
+  .step-card p {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* ---- CASSETTES EXPLAINER ---- */
+  .cassettes {
+    padding: 100px 0;
+    border-top: 1px solid var(--border);
+  }
+  .cassettes-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .cassettes h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    max-width: 640px;
+    margin-bottom: 24px;
+  }
+  .cassettes > .container > p {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin-bottom: 56px;
+    line-height: 1.7;
+  }
+  .cassette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .cassette-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+  .cassette-item:hover { border-color: var(--accent); transform: translateY(-3px); }
+  .cassette-icon {
+    font-size: 1.8rem;
+    margin-bottom: 4px;
+  }
+  .cassette-item h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+  .cassette-item .cassette-author {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .cassette-item .cassette-desc {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* ---- SCENARIO ---- */
+  .scenario {
+    padding: 100px 0;
+    border-top: 1px solid var(--border);
+  }
+  .scenario-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--blue-soft);
+    margin-bottom: 16px;
+  }
+  .scenario h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    max-width: 640px;
+    margin-bottom: 56px;
+  }
+  .chat-window {
+    max-width: 600px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .chat-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .chat-avatar {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+  }
+  .chat-header-text .chat-name {
+    font-weight: 700; font-size: 0.9rem;
+  }
+  .chat-header-text .chat-status {
+    font-size: 0.75rem; color: var(--green);
+  }
+  .chat-body {
+    padding: 24px;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+  .msg {
+    max-width: 85%;
+    padding: 14px 18px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+  }
+  .msg-user {
+    background: var(--surface);
+    color: var(--text-muted);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+  .msg-bot {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .msg-bot em { color: var(--accent); font-style: normal; font-weight: 600; }
+
+  /* ---- COACHES CTA ---- */
+  .coaches {
+    padding: 100px 0;
+    border-top: 1px solid var(--border);
+  }
+  .coaches-inner {
+    background: linear-gradient(135deg, var(--bg-card), var(--bg-elevated));
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 64px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .coaches h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  .coaches p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+  .coaches-checks {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .coaches-checks li {
+    display: flex; align-items: flex-start; gap: 12px;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+  .coaches-checks li::before {
+    content: '✓';
+    color: var(--green);
+    font-weight: 700;
+    margin-top: 1px;
+  }
+  .coach-stats {
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .coach-stat-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .coach-stat-card h4 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+  }
+  .coach-stat-card p {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 0;
+  }
+
+  /* ---- STATS BAR ---- */
+  .stats-bar {
+    padding: 60px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .stats-bar .container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 32px;
+  }
+  .stat-item { text-align: center; }
+  .stat-item strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  .stat-item span {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+
+  /* ---- WAITLIST CTA ---- */
+  .waitlist {
+    padding: 120px 0;
+    text-align: center;
+    position: relative;
+  }
+  .waitlist::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 700px; height: 500px;
+    background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .waitlist h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .waitlist h2 em { font-style: italic; color: var(--accent); }
+  .waitlist p {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    max-width: 480px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+    position: relative;
+  }
+  .email-form {
+    display: flex;
+    gap: 12px;
+    max-width: 440px;
+    margin: 0 auto 16px;
+    position: relative;
+  }
+  .email-form input {
+    flex: 1;
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg-elevated);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .email-form input::placeholder { color: var(--text-dim); }
+  .email-form input:focus { border-color: var(--accent); }
+  .email-form button {
+    padding: 16px 28px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .email-form button:hover { transform: translateY(-2px); box-shadow: 0 8px 32px var(--accent-glow); }
+  .waitlist-note {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    position: relative;
+  }
+
+  /* ---- FAQ ---- */
+  .faq {
+    padding: 100px 0;
+    border-top: 1px solid var(--border);
+  }
+  .faq h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    letter-spacing: -0.02em;
+    margin-bottom: 48px;
+  }
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .faq-item {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+  }
+  .faq-item h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .faq-item p {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* ---- DISCLAIMER ---- */
+  .disclaimer {
+    padding: 32px 0;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+  .disclaimer p {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* ---- FOOTER ---- */
+  footer {
+    padding: 40px 0;
+    border-top: 1px solid var(--border);
+  }
+  footer .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  footer .logo { font-size: 1.1rem; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 0.82rem;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--text-muted); }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 768px) {
+    .hero { padding: 130px 0 70px; }
+    .hero-proof { gap: 24px; }
+    .coaches-inner { grid-template-columns: 1fr; padding: 40px 28px; }
+    .email-form { flex-direction: column; }
+    .nav-links a:not(.nav-cta) { display: none; }
+    .stats-bar .container { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav>
+  <div class="container">
+    <a href="#" class="logo">Focus<span>Call</span></a>
+    <div class="nav-links">
+      <a href="#so-funktionierts">So funktioniert's</a>
+      <a href="#fuer-coaches">Für Coaches</a>
+      <a href="#faq">FAQ</a>
+      <a href="#waitlist" class="nav-cta">Early Access sichern</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge">Für ADHS-Betroffene im DACH-Raum</div>
+    <h1>Du wartest Monate auf Hilfe.<br>Dein Gehirn wartet <em>keine Sekunde.</em></h1>
+    <p class="hero-sub">
+      6–12 Monate Wartezeit auf professionelle ADHS-Unterstützung. Und bis dahin? Verpasste Deadlines, vergessene Termine, der ewige Kampf mit Struktur. FocusCall gibt dir jetzt einen AI-Coach, der mit echtem Expertenwissen arbeitet — nicht mit generischen Tipps aus dem Internet.
+    </p>
+    <div class="hero-cta-group">
+      <a href="#waitlist" class="btn-primary">Early Access sichern →</a>
+      <a href="#so-funktionierts" class="btn-secondary">Wie es funktioniert</a>
+    </div>
+    <div class="hero-proof">
+      <div class="hero-proof-item">
+        <strong>6–12 Mo.</strong>
+        <span>Wartezeit auf ADHS-Coaching in DE</span>
+      </div>
+      <div class="hero-proof-item">
+        <strong>80–150 €</strong>
+        <span>pro Stunde bei Privat-Coaches</span>
+      </div>
+      <div class="hero-proof-item">
+        <strong>24/7</strong>
+        <span>FocusCall ist immer da</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ PAIN ═══════════════ -->
+<section class="pain">
+  <div class="container">
+    <p class="pain-label">Das kennst du</p>
+    <h2>Dein Kopf hat 47 Tabs offen. Keiner davon lädt fertig.</h2>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <p class="time">Montag, 09:12 Uhr</p>
+        <h3>Die To-Do-Liste, die dich lähmt</h3>
+        <p>Du sitzt vor deinem Laptop. Du weißt, was du tun solltest. Aber dein Gehirn springt zwischen 5 Aufgaben hin und her — und am Ende des Vormittags hast du keine einzige angefangen. Nicht weil du faul bist. Weil dein Gehirn anders priorisiert.</p>
+      </div>
+      <div class="pain-card">
+        <p class="time">Mittwoch, 15:30 Uhr</p>
+        <h3>Der Termin, den du vergessen hast</h3>
+        <p>Dein Steuerberater hat angerufen. Zum dritten Mal. Die Unterlagen fehlen seit zwei Wochen. Du hattest es dir vorgenommen — wirklich. Aber irgendwo zwischen dem Hyperfokus auf ein Nebenprojekt und dem spontanen Impuls, die Küche umzuräumen, ist es verschwunden.</p>
+      </div>
+      <div class="pain-card">
+        <p class="time">Freitag, 23:45 Uhr</p>
+        <h3>Die Nacht, in der alles klar wird</h3>
+        <p>Jetzt, wo du schlafen solltest, ist dein Gehirn hellwach. Du machst Pläne. Schreibst Listen. Dieses Mal wird alles anders. Morgen früh ist die Energie weg, die Liste vergessen, und der Kreislauf beginnt von vorn.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ SOLUTION ═══════════════ -->
+<section class="solution" id="so-funktionierts">
+  <div class="container">
+    <p class="solution-label">Die Lösung</p>
+    <h2>Kein weiterer Ratgeber. Ein Coach, der dein Gehirn versteht.</h2>
+    <p>FocusCall kombiniert echtes Expertenwissen von verifizierten ADHS-Coaches mit einem AI-Agenten, der deine Muster lernt, deine Tage strukturiert und dich dort abholt, wo du gerade feststeckst.</p>
+    <div class="solution-steps">
+      <div class="step-card">
+        <span class="step-num">01</span>
+        <h3>Sag, was dich gerade blockiert</h3>
+        <p>Per Voice oder Chat — beschreib einfach, wie es dir gerade geht. "Ich hab 10 Sachen zu tun und kann mit keiner anfangen." Dein Coach versteht den Kontext.</p>
+      </div>
+      <div class="step-card">
+        <span class="step-num">02</span>
+        <h3>Bekomm eine Strategie, die zu deinem Kopf passt</h3>
+        <p>Keine generischen Produktivitäts-Hacks. Methoden von echten ADHS-Coaches, angepasst an deine Situation. Dein Coach kennt deine Muster und weiß, was bei dir funktioniert.</p>
+      </div>
+      <div class="step-card">
+        <span class="step-num">03</span>
+        <h3>Setz es um — mit Begleitung, nicht allein</h3>
+        <p>25 Minuten Fokus-Sprint. Check-in danach. Erinnerung vor dem nächsten Termin. Dein Coach bleibt dran, auch wenn dein Gehirn längst zum nächsten Thema gesprungen ist.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CASSETTES ═══════════════ -->
+<section class="cassettes">
+  <div class="container">
+    <p class="cassettes-label">Cassettes — das Herzstück</p>
+    <h2>Echtes Expertenwissen, nicht ChatGPT-Sprüche.</h2>
+    <p>Cassettes sind Wissens-Pakete von echten ADHS-Coaches. Jede Cassette enthält erprobte Methoden, Strategien und Denkmodelle eines Experten — und macht deinen AI-Coach schlauer. Du wählst, was zu deinen Herausforderungen passt.</p>
+    <div class="cassette-grid">
+      <div class="cassette-item">
+        <div class="cassette-icon">🎯</div>
+        <h4>Fokus-Starter</h4>
+        <span class="cassette-author">z.B. von einem ADHS-Coach</span>
+        <p class="cassette-desc">Techniken für den Einstieg in schwierige Aufgaben. Körper-Anker, Mikro-Schritte, Übergangs-Rituale.</p>
+      </div>
+      <div class="cassette-item">
+        <div class="cassette-icon">💰</div>
+        <h4>Finanzen & ADHS</h4>
+        <span class="cassette-author">z.B. von einem Finanz-Coach</span>
+        <p class="cassette-desc">Rechnungen, Steuern, Budgets — Systeme die auch funktionieren, wenn du drei Wochen nicht reinschaust.</p>
+      </div>
+      <div class="cassette-item">
+        <div class="cassette-icon">🌙</div>
+        <h4>Schlaf-Routinen</h4>
+        <span class="cassette-author">z.B. von einer Schlaf-Expertin</span>
+        <p class="cassette-desc">Das Gehirn abschalten, wenn es nicht abschalten will. Wind-down Protokolle die bei ADHS funktionieren.</p>
+      </div>
+      <div class="cassette-item">
+        <div class="cassette-icon">🗓️</div>
+        <h4>Alltags-Struktur</h4>
+        <span class="cassette-author">z.B. von einem Verhaltens-Coach</span>
+        <p class="cassette-desc">Morgen-Routinen, Wochen-Planung, Transitions — der Kleber der deinen Tag zusammenhält.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ SCENARIO ═══════════════ -->
+<section class="scenario">
+  <div class="container">
+    <p class="scenario-label">Live Beispiel</p>
+    <h2>So fühlt sich ein Gespräch mit deinem Coach an.</h2>
+    <div class="chat-window">
+      <div class="chat-header">
+        <div class="chat-avatar">🧠</div>
+        <div class="chat-header-text">
+          <div class="chat-name">Dein FocusCall Coach</div>
+          <div class="chat-status">● Online — Fokus-Starter Cassette aktiv</div>
+        </div>
+      </div>
+      <div class="chat-body">
+        <div class="msg msg-user">Ich sitze seit einer Stunde vor meinem Laptop und bekomme nichts hin. Ich hab so viel zu tun dass ich gar nicht weiß wo ich anfangen soll.</div>
+        <div class="msg msg-bot">Das klingt nach Aufgaben-Paralyse — dein Gehirn sieht alle 10 Sachen gleichzeitig und blockiert. Lass uns das runterbrechen. <em>Nenn mir nur eine Sache, die heute wirklich passieren muss.</em> Nicht die wichtigste. Die, bei der du am wenigsten Widerstand spürst.</div>
+        <div class="msg msg-user">Die Rechnung an den Kunden Schmidt schreiben. Dauert eigentlich nur 20 Minuten.</div>
+        <div class="msg msg-bot">Perfekt — 20 Minuten ist machbar. Wir machen einen <em>Fokus-Sprint</em>: Du öffnest jetzt nur das Rechnungstool, nichts anderes. Ich melde mich in 20 Minuten. Wenn du unterwegs hängen bleibst, sag Bescheid. Deal?</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ COACHES ═══════════════ -->
+<section class="coaches" id="fuer-coaches">
+  <div class="container">
+    <div class="coaches-inner">
+      <div>
+        <h2>Du bist ADHS-Coach?<br>Verkaufe dein Wissen im Schlaf.</h2>
+        <p>Deine Expertise hilft Hunderten — aber du kannst nur einen Klienten gleichzeitig betreuen. Mit Cassettes verpackst du deine Methoden einmal und erreichst damit Tausende. Ohne zusätzliche Stunden. Ohne Qualitätsverlust.</p>
+        <ul class="coaches-checks">
+          <li>Erstelle eine Cassette aus deinen bewährten Methoden</li>
+          <li>Verifizierter Coach-Status schafft Vertrauen</li>
+          <li>Du verdienst bei jeder Nutzung — passive Einnahmen</li>
+          <li>Du bestimmst Inhalt, Preis und Updates</li>
+        </ul>
+        <br>
+        <a href="#waitlist" class="btn-primary" style="display: inline-flex;">Als Coach bewerben →</a>
+      </div>
+      <div class="coach-stats">
+        <div class="coach-stat-card">
+          <h4>⏱ Das Problem</h4>
+          <p>Ein Coach betreut 20–30 Klienten. Die Wartelisten wachsen. Deine Methoden skalieren nicht mit dir.</p>
+        </div>
+        <div class="coach-stat-card">
+          <h4>💡 Die Lösung</h4>
+          <p>Eine Cassette erreicht unbegrenzt viele Nutzer. Deine besten Strategien arbeiten für dich, während du schläfst.</p>
+        </div>
+        <div class="coach-stat-card">
+          <h4>📈 Das Ergebnis</h4>
+          <p>Neue Einnahmen ohne Zeitaufwand. Mehr Reichweite. Und Klienten, die schon vorbereitet in dein 1:1 kommen.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ STATS ═══════════════ -->
+<section class="stats-bar">
+  <div class="container">
+    <div class="stat-item">
+      <strong>6–12 Mo.</strong>
+      <span>Wartezeit auf ADHS-Coaching in DE</span>
+    </div>
+    <div class="stat-item">
+      <strong>~4 Mio.</strong>
+      <span>ADHS-Betroffene Erwachsene in DACH</span>
+    </div>
+    <div class="stat-item">
+      <strong>80%</strong>
+      <span>sind ohne professionelle Begleitung</span>
+    </div>
+    <div class="stat-item">
+      <strong>0 €</strong>
+      <span>ADHS-Coaching von der Krankenkasse</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ WAITLIST ═══════════════ -->
+<section class="waitlist" id="waitlist">
+  <div class="container">
+    <h2>Dein Gehirn verdient<br>Unterstützung, die <em>jetzt</em> da ist.</h2>
+    <p>Wir starten bald in Deutschland, Österreich und der Schweiz. Sichere dir Early Access — die ersten 200 bekommen 30 Tage kostenlos.</p>
+    <div class="email-form">
+      <input type="email" placeholder="Deine E-Mail-Adresse" aria-label="E-Mail">
+      <button type="submit">Platz sichern</button>
+    </div>
+    <p class="waitlist-note">Kein Spam. Eine E-Mail wenn wir starten. Jederzeit abmeldbar.</p>
+  </div>
+</section>
+
+<!-- ═══════════════ FAQ ═══════════════ -->
+<section class="faq" id="faq">
+  <div class="container">
+    <h2>Häufige Fragen</h2>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <h4>Ist das ein Ersatz für Therapie oder Medikamente?</h4>
+        <p>Nein. FocusCall ist Coaching, keine Therapie. Wir helfen bei Alltagsstrategien — Struktur, Fokus, Routinen. Bei klinischen Fragen verweisen wir an Fachärzte. FocusCall kann eine gute Ergänzung sein, wenn du auf einen Therapieplatz wartest.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Wie ist das mit Datenschutz?</h4>
+        <p>Deine Daten bleiben in der EU. Wir verkaufen nichts an Dritte. Dein Gesprächsverlauf gehört dir. DSGVO-konform. Du kannst jederzeit alles löschen.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Was kostet FocusCall?</h4>
+        <p>Die genauen Preise stehen noch nicht fest. Unser Ziel: ein Bruchteil dessen, was eine einzelne Coaching-Stunde kostet. Deutlich unter 30 € im Monat. Early-Access-Nutzer bekommen 30 Tage kostenlos.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Was macht eine Cassette besser als ChatGPT?</h4>
+        <p>ChatGPT gibt dir generische Antworten aus dem Internet. Eine Cassette enthält die spezifischen Methoden eines echten ADHS-Coaches — strukturiert, getestet, und auf ADHS-Gehirne zugeschnitten. Der Unterschied wie ein Wikipedia-Artikel vs. eine echte Coaching-Session.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Brauche ich eine Diagnose?</h4>
+        <p>Nein. FocusCall ist für alle, die Unterstützung bei Fokus, Struktur und Alltagsorganisation suchen — ob mit Diagnose, Verdacht, oder einfach dem Gefühl, dass dein Kopf anders tickt.</p>
+      </div>
+      <div class="faq-item">
+        <h4>Wie werden Coaches verifiziert?</h4>
+        <p>Jeder Coach durchläuft ein Prüfverfahren: Qualifikationsnachweis, Methoden-Review, und Test der Cassette durch unser Team. Nur geprüfte Cassettes kommen auf die Plattform.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ DISCLAIMER ═══════════════ -->
+<section class="disclaimer">
+  <div class="container">
+    <p>FocusCall ist kein medizinisches Produkt und ersetzt keine ärztliche Diagnose, Psychotherapie oder medikamentöse Behandlung. Bei akuten psychischen Krisen wende dich bitte an die Telefonseelsorge (0800 111 0 111) oder deinen Hausarzt. ADHS-Coaching ist eine Ergänzung, kein Ersatz für professionelle medizinische Versorgung.</p>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="container">
+    <a href="#" class="logo">Focus<span>Call</span></a>
+    <div class="footer-links">
+      <a href="#">Impressum</a>
+      <a href="#">Datenschutz</a>
+      <a href="#">Kontakt</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
