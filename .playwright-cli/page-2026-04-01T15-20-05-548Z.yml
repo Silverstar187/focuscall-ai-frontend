@@ -1,0 +1,111 @@
+- generic [ref=e2]:
+  - navigation [ref=e7]:
+    - generic [ref=e8]:
+      - img [ref=e10]
+      - generic [ref=e18]: NeuroCoach AI
+    - generic [ref=e19]:
+      - generic [ref=e20]: Für Coaches
+      - button "Coach werden" [ref=e21]
+  - main [ref=e22]:
+    - generic [ref=e24]:
+      - generic [ref=e25]:
+        - img
+        - text: Coming Soon — DACH Region
+      - heading "Dein persönlicher ADHD Coach — immer verfügbar" [level=1] [ref=e26]:
+        - text: Dein persönlicher ADHD Coach
+        - text: — immer verfügbar
+      - paragraph [ref=e27]: Monatelange Wartezeiten auf professionelle Unterstützung? Unser AI-Agent versteht dein ADHD-Gehirn und begleitet dich täglich — basierend auf echten Methoden verifizierter Coaches.
+      - generic [ref=e28]:
+        - generic [ref=e29]: Struktur
+        - generic [ref=e30]: Fokus
+        - generic [ref=e31]: Follow-through
+        - generic [ref=e32]: Finanzen
+        - generic [ref=e33]: Work-Life
+      - generic [ref=e35]:
+        - paragraph [ref=e36]: "Trag dich ein und sei unter den Ersten:"
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - img [ref=e39]
+            - textbox "deine@email.de" [ref=e42]
+          - button "Benachrichtigen" [ref=e43]:
+            - text: Benachrichtigen
+            - img
+    - generic [ref=e45]:
+      - generic [ref=e46]:
+        - heading "Wie es funktioniert" [level=2] [ref=e47]
+        - paragraph [ref=e48]: Keine generischen Self-Help-Tipps. Echte Expertise, personalisiert für dich.
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - img [ref=e52]
+          - heading "Verifizierte Coaches" [level=3] [ref=e57]
+          - paragraph [ref=e58]: ADHD-Experten erstellen ihre bewährten Methoden als 'Cassettes'
+        - generic [ref=e59]:
+          - img [ref=e61]
+          - heading "Plug & Play Wissen" [level=3] [ref=e63]
+          - paragraph [ref=e64]: Wähle Cassettes für deine Herausforderungen und lade sie in deinen Agent
+        - generic [ref=e65]:
+          - img [ref=e67]
+          - heading "Dein AI-Companion" [level=3] [ref=e75]
+          - paragraph [ref=e76]: 24/7 verfügbar, persönlich angepasst, basierend auf echter Expertise
+    - generic [ref=e79]:
+      - generic [ref=e80]:
+        - generic [ref=e81]: Für Coaches
+        - heading "Skaliere deine Expertise" [level=2] [ref=e82]
+        - paragraph [ref=e83]: Du hilfst Menschen mit ADHD, aber deine Zeit ist begrenzt? Verpacke deine Methoden als Cassettes und erreiche mehr Menschen — ohne mehr Stunden zu verkaufen.
+        - generic [ref=e84]:
+          - generic [ref=e85]:
+            - img [ref=e86]
+            - generic [ref=e88]: Erstelle einmal, verkaufe unendlich
+          - generic [ref=e89]:
+            - img [ref=e90]
+            - generic [ref=e92]: Neue Einnahmequelle ohne Zeit-Tradeoff
+          - generic [ref=e93]:
+            - img [ref=e94]
+            - generic [ref=e96]: Verifizierter Coach-Status auf der Plattform
+        - button "Mehr erfahren" [ref=e97]
+      - generic [ref=e98]:
+        - generic [ref=e101]:
+          - paragraph [ref=e102]: Dr. Anna Schmidt
+          - paragraph [ref=e103]: ADHD Coach & Autorin
+        - generic [ref=e104]:
+          - generic [ref=e105]:
+            - text: Fokus-Master Cassette
+            - paragraph [ref=e106]: 328 Verkäufe • €29.99
+          - generic [ref=e107]:
+            - text: Time-Blocking Methode
+            - paragraph [ref=e108]: 156 Verkäufe • €19.99
+    - generic [ref=e110]:
+      - separator [ref=e111]
+      - generic [ref=e112]:
+        - generic [ref=e113]:
+          - generic [ref=e114]: 1,200+
+          - paragraph [ref=e115]: Warteliste
+        - generic [ref=e116]:
+          - generic [ref=e117]: "45"
+          - paragraph [ref=e118]: Coaches
+        - generic [ref=e119]:
+          - generic [ref=e120]: 6-9
+          - paragraph [ref=e121]: Monate Wartezeit (normal)
+        - generic [ref=e122]:
+          - generic [ref=e123]: "0"
+          - paragraph [ref=e124]: Wartezeit bei uns
+    - generic [ref=e126]:
+      - img [ref=e127]
+      - heading "Keine Lust mehr zu warten?" [level=2] [ref=e130]
+      - paragraph [ref=e131]: Die durchschnittliche Wartezeit auf einen ADHD-Coach in Deutschland beträgt 6-9 Monate. Wir machen professionelle Unterstützung sofort verfügbar.
+      - generic [ref=e132]:
+        - button "Auf die Warteliste" [ref=e133]
+        - button "Für Coaches" [ref=e134]
+  - contentinfo [ref=e135]:
+    - generic [ref=e137]:
+      - generic [ref=e138]:
+        - img [ref=e139]
+        - generic [ref=e147]: NeuroCoach AI
+      - paragraph [ref=e148]: Für Selbstständige & Profis in Deutschland, Österreich, Schweiz
+      - generic [ref=e149]:
+        - link "Impressum" [ref=e150] [cursor=pointer]:
+          - /url: "#"
+        - link "Datenschutz" [ref=e151] [cursor=pointer]:
+          - /url: "#"
+        - link "Kontakt" [ref=e152] [cursor=pointer]:
+          - /url: "#"
