@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +32,10 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════════════
            SECTION 1: HERO
            ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative px-6 pt-24 pb-16 lg:px-12 lg:pt-32 lg:pb-24">
+      <section className="relative px-6 pt-24 pb-16 lg:px-12 lg:pt-32 lg:pb-24 overflow-hidden">
+        {/* Video Background */}
+        <VideoBackground />
+        
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <div className="absolute -top-[40%] -right-[20%] h-[600px] w-[600px] rounded-full bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-transparent blur-3xl" />
         </div>
@@ -352,5 +355,30 @@ export default function Home() {
         </div>
       </footer>
     </main>
+  );
+}
+
+// Video Background Component - 10% opacity, 200% speed
+function VideoBackground() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 2.0; // 200% speed
+    }
+  }, []);
+
+  return (
+    <video
+      ref={videoRef}
+      autoPlay
+      muted
+      loop
+      playsInline
+      className="absolute inset-0 -z-20 h-full w-full object-cover opacity-10"
+      poster=""
+    >
+      <source src="/video-bg.mp4" type="video/mp4" />
+    </video>
   );
 }
