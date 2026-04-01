@@ -242,9 +242,30 @@ export default function Home() {
     };
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) setSubmitted(true);
+    if (!email || isSubmitting) return;
+    
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, lang }),
+      });
+      
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        alert('Etwas ist schiefgelaufen. Bitte versuche es erneut.');
+      }
+    } catch (error) {
+      alert('Etwas ist schiefgelaufen. Bitte versuche es erneut.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -594,9 +615,9 @@ export default function Home() {
                         aria-label="E-Mail-Adresse"
                       />
                     </div>
-                    <Button type="submit" className="gap-2">
-                      {t.formSubmit}
-                      <ArrowRight className="h-4 w-4" />
+                    <Button type="submit" className="gap-2" disabled={isSubmitting}>
+                      {isSubmitting ? '...' : t.formSubmit}
+                      {!isSubmitting && <ArrowRight className="h-4 w-4" />}
                     </Button>
                   </div>
                   <p className="text-xs text-muted-foreground">
