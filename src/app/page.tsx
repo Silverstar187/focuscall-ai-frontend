@@ -547,7 +547,7 @@ export default function Home() {
                 { icon: Target, title: t.module1Title, author: t.module1Author, desc: t.module1Desc },
                 { icon: Wallet, title: t.module2Title, author: t.module2Author, desc: t.module2Desc },
                 { icon: Moon, title: t.module3Title, author: t.module3Author, desc: t.module3Desc },
-                { icon: CalendarDays, title: t.module4Title, author: t.module4Author, desc: lang === 'de' ? 'Morgen-Routinen, Wochen-Planung, Tagesstruktur.' : 'Morning routines, weekly planning, switching between activities.' },
+                { icon: CalendarDays, title: t.module4Title, author: t.module4Author, desc: lang === 'de' ? 'Morgen-Routinen, Wochen-Planung, Wechsel zwischen Aktivitäten.' : 'Morning routines, weekly planning, switching between activities.' },
               ].map((module, i) => (
                 <Card key={i} className="overflow-hidden">
                   <CardContent className="p-4">
