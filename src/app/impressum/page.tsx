@@ -11,10 +11,10 @@ export default function Impressum() {
     <main className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b px-6 py-4 lg:px-12">
-        <div className="mx-auto flex max-w-6xl items-center gap-2">
+        <a href="/" className="mx-auto flex max-w-6xl items-center gap-2 hover:opacity-80 transition-opacity">
           <Brain className="h-6 w-6 text-primary" />
           <span className="font-semibold text-lg">FocusCall</span>
-        </div>
+        </a>
       </header>
 
       {/* Content */}
@@ -30,15 +30,43 @@ export default function Impressum() {
                 Angaben gemäß § 5 TMG
               </h2>
               <p className="space-y-1">
-                <strong className="text-foreground">FocusCall</strong>
+                <strong className="text-foreground">focuscall UG</strong>
                 <br />
-                Inhaber: Max Mustermann
+                (haftungsbeschränkt)
                 <br />
-                Musterstraße 123
+                Am Lindenbusch 22 a
                 <br />
-                12345 Berlin
+                50354 Hürth
                 <br />
                 Deutschland
+              </p>
+            </section>
+
+            <Separator />
+
+            <section>
+              <h2 className="mb-3 text-lg font-semibold text-foreground">
+                Handelsregister
+              </h2>
+              <p>
+                Amtsgericht Köln
+                <br />
+                HRB 125121
+                <br />
+                EUID: DER3306.HRB125121
+              </p>
+            </section>
+
+            <Separator />
+
+            <section>
+              <h2 className="mb-3 text-lg font-semibold text-foreground">
+                Vertreten durch
+              </h2>
+              <p>
+                Oliver Maximilian Spitzkat
+                <br />
+                Geschäftsführer
               </p>
             </section>
 
@@ -49,9 +77,7 @@ export default function Impressum() {
                 Kontakt
               </h2>
               <p className="space-y-1">
-                E-Mail: hello@focuscall.ai
-                <br />
-                Telefon: +49 (0) 123 456789
+                E-Mail: support@focuscall.ai
               </p>
             </section>
 
@@ -64,7 +90,7 @@ export default function Impressum() {
               <p>
                 Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz:
                 <br />
-                DE123456789
+                wird nachgereicht
               </p>
             </section>
 
@@ -72,14 +98,20 @@ export default function Impressum() {
 
             <section>
               <h2 className="mb-3 text-lg font-semibold text-foreground">
-                Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV
+                Streitschlichtung
               </h2>
               <p>
-                Max Mustermann
-                <br />
-                Musterstraße 123
-                <br />
-                12345 Berlin
+                Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: 
+                <a 
+                  href="https://ec.europa.eu/consumers/odr" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline ml-1"
+                >
+                  https://ec.europa.eu/consumers/odr
+                </a>
+                <br /><br />
+                Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
               </p>
             </section>
 
@@ -87,12 +119,14 @@ export default function Impressum() {
 
             <section>
               <h2 className="mb-3 text-lg font-semibold text-foreground">
-                Hinweis
+                Haftung für Inhalte
               </h2>
               <p>
-                FocusCall befindet sich aktuell in der Entwicklungsphase. 
-                Die angegebenen Kontaktdaten dienen vorläufigen Anfragen. 
-                Ein vollständiges Impressum wird vor dem offiziellen Launch veröffentlicht.
+                Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten 
+                nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als 
+                Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde 
+                Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige 
+                Tätigkeit hinweisen.
               </p>
             </section>
           </div>
@@ -107,7 +141,7 @@ export default function Impressum() {
             <span className="font-semibold">FocusCall</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} FocusCall. Alle Rechte vorbehalten.
+            © {new Date().getFullYear()} focuscall UG. Alle Rechte vorbehalten.
           </p>
           <div className="flex gap-6 text-xs text-muted-foreground">
             <a href="/impressum" className="hover:text-foreground transition-colors">Impressum</a>

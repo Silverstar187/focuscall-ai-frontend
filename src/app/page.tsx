@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,104 @@ import {
 export default function Home() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const spinnerRef = useRef<SVGSVGElement>(null);
+  const solutionRef = useRef<HTMLElement>(null);
+  const problemRef = useRef<HTMLElement>(null);
+  const [problemHighlighted, setProblemHighlighted] = useState(false);
+  const [activeKw, setActiveKw] = useState(0);
+  const activeKwRef = useRef(0);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.playbackRate = 1.0; // 100% speed
+      video.defaultPlaybackRate = 1.0;
+      
+      // Ensure it stays at 2x even after metadata loads
+      const handleLoaded = () => {
+        video.playbackRate = 1.0;
+      };
+      video.addEventListener('loadedmetadata', handleLoaded);
+      return () => video.removeEventListener('loadedmetadata', handleLoaded);
+    }
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setProblemHighlighted(true); },
+      { threshold: 0.3 }
+    );
+    if (problemRef.current) observer.observe(problemRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    // scrollbasiert mit 1s delay
+    let t: ReturnType<typeof setTimeout>;
+
+    const handleScroll = () => {
+      const el = solutionRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const wH = window.innerHeight;
+      // startet erst wenn section bei 30% vom oberen Rand ist
+      const rawProgress = Math.min(1, Math.max(0, (wH * 0.7 - rect.top) / (wH * 0.5)));
+      // um 30% nach hinten verschoben
+      const progress = Math.max(0, Math.min(1, (rawProgress - 0.3) / 0.7));
+      const target = Math.round(progress * 24);
+      clearTimeout(t);
+      if (target < activeKwRef.current) {
+        // rückwärts → sofort
+        activeKwRef.current = target;
+        setActiveKw(target);
+      } else {
+        activeKwRef.current = target;
+        setActiveKw(target);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => { clearTimeout(t); window.removeEventListener('scroll', handleScroll); };
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const spinner = spinnerRef.current;
+      const solution = solutionRef.current;
+      if (!spinner || !solution) return;
+
+      const rect = solution.getBoundingClientRect();
+      const windowH = window.innerHeight;
+
+      // spinner: verlangsamt wenn solution reinkommt, stoppt wenn oben
+      const spinnerProgress = Math.min(1, Math.max(0, (windowH - rect.top) / windowH));
+      if (spinnerProgress >= 1) {
+        spinner.style.animationPlayState = 'paused';
+      } else {
+        spinner.style.animationPlayState = 'running';
+        spinner.style.animationDuration = `${3 + spinnerProgress * 17}s`;
+      }
+
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Rot-Glow zeitbasiert — jeder Keyword hat eigenen transitionDelay
+  const kw = (index: number): React.CSSProperties => {
+    const active = activeKw >= index;
+    // delay nur beim Einschalten: index 1 = 0ms, jeder weitere +0ms (setTimeout übernimmt Timing)
+    return {
+      display: 'inline',
+      color: active ? '#ef4444' : 'inherit',
+      textShadow: active
+        ? '0 0 6px rgba(239,68,68,0.2)'
+        : '0 0 0px transparent',
+      transition: active ? 'color 0.2s ease, text-shadow 0.2s ease' : 'color 0.2s ease, text-shadow 0.2s ease',
+    };
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,13 +126,25 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen">
       {/* ═══════════════════════════════════════════════════════════════
            SECTION 1: HERO
            ═══════════════════════════════════════════════════════════════ */}
       <section className="relative px-6 pt-24 pb-16 lg:px-12 lg:pt-32 lg:pb-24 overflow-hidden">
-        {/* Video Background */}
-        <VideoBackground />
+        {/* Video Background - 10% opacity, 100% speed, nur obere Hälfte */}
+        <div className="absolute inset-0 -z-20 overflow-hidden">
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full object-cover opacity-[0.08]"
+            style={{ height: '50%', objectPosition: 'top' }}
+          >
+            <source src="/video-bg.mp4" type="video/mp4" />
+          </video>
+        </div>
         
         <div className="absolute inset-0 -z-10 overflow-hidden">
           <div className="absolute -top-[40%] -right-[20%] h-[600px] w-[600px] rounded-full bg-gradient-to-br from-orange-500/10 via-amber-500/5 to-transparent blur-3xl" />
@@ -46,41 +156,35 @@ export default function Home() {
             Für Erwachsene mit ADHS im DACH-Raum
           </Badge>
 
-          <h1 className="mb-8 max-w-4xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-6xl leading-tight">
+          <h1 className="mb-8 max-w-4xl text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl lg:text-6xl leading-tight" style={{ textShadow: '0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff, 0 0 32px #fff, 0 0 64px #fff, 0 0 128px #fff, 0 0 256px #fff, 0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff' }}>
             Seit Monaten wartest du auf Hilfe.
             <br />
             <span className="text-primary">Dein Kopf wartet nicht.</span>
           </h1>
 
           <div className="mb-10 max-w-2xl space-y-6">
-            <p className="text-xl font-medium text-foreground leading-relaxed">
+            <p className="text-xl font-medium text-foreground leading-relaxed" style={{ textShadow: '0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff, 0 0 32px #fff, 0 0 64px #fff, 0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff' }}>
               Tausend Gedanken, mit tausend Untergedanken.
             </p>
             
-            <div className="flex items-center gap-3 text-muted-foreground">
-              <span className="h-px flex-1 bg-border"></span>
-              <span className="text-sm">●</span>
-              <span className="h-px flex-1 bg-border"></span>
-            </div>
-            
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-muted-foreground leading-relaxed" style={{ textShadow: '0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff, 0 0 32px #fff, 0 0 64px #fff, 0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff' }}>
               Eigentlich weißt du was du tun müsstest aber du machst es irgendwie trotzdem nicht.
             </p>
             
             <div className="space-y-4 text-muted-foreground leading-relaxed pt-4">
-              <p>
-                Nicht weil du faul bist. Nicht weil du es nicht willst. 
+              <p style={{ textShadow: '0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff, 0 0 32px #fff, 0 0 64px #fff, 0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff' }}>
+                Nicht weil du faul bist. Nicht weil du es nicht willst.
                 Sondern weil dir niemand zeigt, wie dein Kopf wirklich funktioniert.
               </p>
-              
-              <p>
-                Therapieplatz? 6 bis 12 Monate. Und bis dahin kämpfst du allein. 
-                Gegen das Chaos. Gegen die Scham. 
+
+              <p style={{ textShadow: '0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff, 0 0 32px #fff, 0 0 64px #fff, 0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff' }}>
+                Therapieplatz? 6 bis 12 Monate. Und bis dahin kämpfst du allein.
+                Gegen das Chaos. Gegen die Scham.
                 Gegen das Gefühl, dass alle anderen es hinkriegen — nur du nicht.
               </p>
             </div>
             
-            <p className="text-lg font-semibold text-foreground pt-4 border-t border-border/50">
+            <p className="text-lg font-semibold text-foreground pt-4 border-t border-border/50" style={{ textShadow: '0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff, 0 0 32px #fff, 0 0 64px #fff, 0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff' }}>
               FocusCall ist der Coach, der jetzt da ist. Nicht irgendwann. Jetzt.
             </p>
           </div>
@@ -90,19 +194,19 @@ export default function Home() {
               Early Access sichern
               <ArrowRight className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="lg">
+            <Button variant="outline" size="lg" onClick={() => document.getElementById('problem')?.scrollIntoView({behavior: 'smooth'})}>
               Wie es funktioniert
             </Button>
           </div>
 
           <div className="mt-12 flex flex-wrap gap-8">
             <div>
-              <div className="text-2xl font-bold text-primary">6–12 Mo.</div>
-              <div className="text-sm text-muted-foreground">Wartezeit auf ADHS-Coaching in DE</div>
+              <div className="text-2xl font-bold text-primary line-through decoration-red-500">6–12 Mo.</div>
+              <div className="text-sm text-foreground line-through decoration-red-500">Wartezeit auf ADHS-Coaching in DE</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-primary">80–150 €</div>
-              <div className="text-sm text-muted-foreground">pro Stunde bei Privat-Coaches</div>
+              <div className="text-2xl font-bold text-primary line-through decoration-red-500">80–150 €</div>
+              <div className="text-sm text-foreground line-through decoration-red-500">pro Stunde bei Privat-Coaches</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-primary">24/7</div>
@@ -117,15 +221,21 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════════════
            SECTION 2: PROBLEM & AUDIENCE
            ═══════════════════════════════════════════════════════════════ */}
-      <section className="px-6 py-16 lg:px-12 lg:py-24">
+      <section id="problem" ref={problemRef} className="px-6 py-16 lg:px-12 lg:py-24">
         <div className="mx-auto max-w-6xl">
           <p className="mb-3 text-sm font-semibold uppercase tracking-wider text-destructive">
             Das kennst du
           </p>
           <div className="mb-12 relative max-w-2xl">
-            <Loader2 className="absolute right-4 top-1/2 h-48 w-48 -translate-y-1/2 animate-spin text-primary/[0.08]" />
+            <Loader2 ref={spinnerRef} className="absolute right-4 top-1/2 h-48 w-48 -translate-y-1/2 text-primary/[0.08]" style={{ animation: 'spin 3s linear infinite' }} />
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl relative z-10">
-              Dein Kopf hat 47 Tabs offen. Keiner davon lädt fertig.
+              Dein Kopf hat{' '}
+              <span style={{
+                color: problemHighlighted ? '#ef4444' : undefined,
+                textShadow: problemHighlighted ? '0 0 6px rgba(239,68,68,0.2)' : '0 0 0px transparent',
+                transition: 'color 0.2s ease, text-shadow 0.2s ease',
+              }}>47 Tabs</span>
+              {' '}offen. Keiner davon lädt fertig.
             </h2>
           </div>
 
@@ -136,12 +246,12 @@ export default function Home() {
                   Montag, 09:12 Uhr
                 </p>
                 <h3 className="mb-3 font-semibold text-lg">
-                  Die To-Do-Liste, die dich lähmt
+                  Du ignorierst deine To-Do-Liste
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Du sitzt vor deinem Laptop. Du weißt, was du tun solltest. Aber dein Gehirn 
-                  springt zwischen 5 Aufgaben hin und her — und am Ende des Vormittags hast 
-                  du keine einzige angefangen. Nicht weil du faul bist. Weil dein Gehirn anders priorisiert.
+                  Und sie ignoriert dich. Du sitzt vor deinem Laptop. Du weißt, 
+                  was du tun müsstest. Aber dein Gehirn springt zwischen 5 Aufgaben 
+                  hin und her. Nicht weil du faul bist. Weil dein Gehirn anders priorisiert.
                 </p>
               </CardContent>
             </Card>
@@ -155,9 +265,10 @@ export default function Home() {
                   Der Termin, den du vergessen hast
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Dein Steuerberater hat angerufen. Zum dritten Mal. Die Unterlagen fehlen seit 
-                  zwei Wochen. Du hattest es dir vorgenommen — wirklich. Aber irgendwo zwischen 
-                  dem Hyperfokus auf ein Nebenprojekt und dem spontanen Impuls, die Küche umzuräumen, 
+                  Dein Steuerberater hat angerufen. Zum dritten Mal. Die Unterlagen fehlen seit
+                  zwei Monaten. Falsch: Jahren! Das Finanzamt schreibt. 
+                  Du hattest es dir vorgenommen — wirklich. Aber irgendwo zwischen
+                  dem Hyperfokus auf ein Nebenprojekt und dem spontanen Impuls, die Küche umzuräumen,
                   ist es verschwunden.
                 </p>
               </CardContent>
@@ -172,8 +283,8 @@ export default function Home() {
                   Die Nacht, in der alles klar wird
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Jetzt, wo du schlafen solltest, ist dein Gehirn hellwach. Du machst Pläne. 
-                  Schreibst Listen. Dieses Mal wird alles anders. Morgen früh ist die Energie weg, 
+                  Jetzt, wo du schlafen solltest, ist dein Gehirn hellwach. Du machst Pläne.
+                  Schreibst Listen. Dieses Mal wird alles anders. Morgen früh ist die Energie weg,
                   die Liste vergessen, und der Kreislauf beginnt von vorn.
                 </p>
               </CardContent>
@@ -187,7 +298,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════════════
            SECTION 3: SOLUTION
            ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative px-6 py-16 lg:px-12 lg:py-24">
+      <section ref={solutionRef} className="relative px-6 py-16 lg:px-12 lg:py-24">
         <div className="absolute inset-0 -z-10">
           <div className="absolute left-1/2 top-0 h-[400px] w-[400px] -translate-x-1/2 rounded-full bg-gradient-to-br from-primary/5 to-transparent blur-3xl" />
         </div>
@@ -197,11 +308,21 @@ export default function Home() {
             Die Lösung
           </p>
           <h2 className="mb-6 max-w-2xl text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-            Kein weiterer Ratgeber. Ein Coach, der dein Gehirn versteht.
+            Kein weiterer Ratgeber. Ein{' '}
+            <span style={kw(1)}>Coach</span>, der dein{' '}
+            <span style={kw(2)}>Gehirn</span>{' '}
+            <span style={kw(3)}>versteht</span>.
           </h2>
           <p className="mb-12 max-w-2xl text-lg text-muted-foreground">
-            FocusCall kombiniert echtes Expertenwissen von verifizierten ADHS-Coaches mit einem 
-            AI-Agenten, der deine Muster lernt, deine Tage strukturiert und dich dort abholt, 
+            FocusCall kombiniert echtes{' '}
+            <span style={kw(4)}>Expertenwissen</span>{' '}
+            <span style={kw(5)}>von</span>{' '}
+            <span style={kw(6)}>verifizierten</span>{' '}
+            <span style={kw(7)}>ADHS-Coaches</span>{' '}
+            mit einem{' '}
+            <span style={kw(8)}>AI-Agenten</span>, der deine{' '}
+            <span style={kw(9)}>Muster</span>{' '}
+            <span style={kw(10)}>lernt</span>, deine Tage strukturiert und dich dort abholt,
             wo du gerade feststeckst.
           </p>
 
@@ -210,9 +331,10 @@ export default function Home() {
               <span className="absolute -right-2 -top-4 text-6xl font-bold text-primary/10">01</span>
               <h3 className="mb-3 font-semibold text-xl">Sag, was dich gerade blockiert</h3>
               <p className="text-muted-foreground">
-                Per Voice oder Chat — beschreib einfach, wie es dir gerade geht. 
-                &quot;Ich hab 10 Sachen zu tun und kann mit keiner anfangen.&quot; 
-                Dein Coach versteht den Kontext.
+                Per <span style={kw(11)}>Voice</span> oder <span style={kw(12)}>Chat</span>{' '}
+                — beschreib einfach, wie es dir gerade geht.
+                &quot;Ich hab 10 Sachen zu tun und kann mit keiner anfangen.&quot;{' '}
+                Dein Coach <span style={kw(13)}>versteht</span> den Kontext.
               </p>
             </div>
 
@@ -220,17 +342,28 @@ export default function Home() {
               <span className="absolute -right-2 -top-4 text-6xl font-bold text-primary/10">02</span>
               <h3 className="mb-3 font-semibold text-xl">Bekomm eine Strategie, die passt</h3>
               <p className="text-muted-foreground">
-                Keine generischen Produktivitäts-Hacks. Methoden von echten ADHS-Coaches, 
-                angepasst an deine Situation. Dein Coach kennt deine Muster und weiß, 
+                Keine generischen Produktivitäts-Hacks. Methoden von echten ADHS-Coaches,{' '}
+                <span style={kw(14)}>angepasst</span> an deine Situation. Dein Coach{' '}
+                <span style={kw(15)}>kennt</span>{' '}
+                <span style={kw(16)}>deine</span>{' '}
+                <span style={kw(17)}>Muster</span> und weiß,
                 was bei dir funktioniert.
               </p>
             </div>
 
             <div className="relative">
               <span className="absolute -right-2 -top-4 text-6xl font-bold text-primary/10">03</span>
-              <h3 className="mb-3 font-semibold text-xl">Setz es um — mit Begleitung</h3>
+              <h3 className="mb-3 font-semibold text-xl">Setz es um —{' '}
+                <span style={kw(18)}>mit</span>{' '}
+                <span style={kw(19)}>Begleitung</span>
+              </h3>
               <p className="text-muted-foreground">
-                25 Minuten Fokus-Sprint. Check-in danach. Erinnerung vor dem nächsten Termin. 
+                25 Minuten Fokus-Sprint.{' '}
+                <span style={kw(20)}>Check-in</span>{' '}
+                <span style={kw(21)}>Call</span>{' '}
+                <span style={kw(22)}>danach</span>.{' '}
+                <span style={kw(23)}>Erinnerung</span> vor dem nächsten{' '}
+                <span style={kw(24)}>Termin</span>.{' '}
                 Dein Coach bleibt dran, auch wenn dein Gehirn längst zum nächsten Thema gesprungen ist.
               </p>
             </div>
@@ -286,7 +419,7 @@ export default function Home() {
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
             Dein Gehirn verdient Unterstützung, die{" "}
-            <span className="text-primary">jetzt</span> da ist.
+            <span className="text-destructive underline">jetzt</span> da ist.
           </h2>
           <p className="mb-8 text-lg text-muted-foreground">
             Wir starten bald in Deutschland, Österreich und der Schweiz. 
@@ -355,30 +488,5 @@ export default function Home() {
         </div>
       </footer>
     </main>
-  );
-}
-
-// Video Background Component - 10% opacity, 200% speed
-function VideoBackground() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = 2.0; // 200% speed
-    }
-  }, []);
-
-  return (
-    <video
-      ref={videoRef}
-      autoPlay
-      muted
-      loop
-      playsInline
-      className="absolute inset-0 -z-20 h-full w-full object-cover opacity-10"
-      poster=""
-    >
-      <source src="/video-bg.mp4" type="video/mp4" />
-    </video>
   );
 }

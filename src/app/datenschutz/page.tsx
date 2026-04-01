@@ -11,10 +11,10 @@ export default function Datenschutz() {
     <main className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b px-6 py-4 lg:px-12">
-        <div className="mx-auto flex max-w-6xl items-center gap-2">
+        <a href="/" className="mx-auto flex max-w-6xl items-center gap-2 hover:opacity-80 transition-opacity">
           <Brain className="h-6 w-6 text-primary" />
           <span className="font-semibold text-lg">FocusCall</span>
-        </div>
+        </a>
       </header>
 
       {/* Content */}
@@ -45,15 +45,17 @@ export default function Datenschutz() {
                 2. Verantwortlicher
               </h2>
               <p className="space-y-1">
-                <strong className="text-foreground">FocusCall</strong>
+                <strong className="text-foreground">focuscall UG (haftungsbeschränkt)</strong>
                 <br />
-                Inhaber: Max Mustermann
+                Geschäftsführer: Oliver Maximilian Spitzkat
                 <br />
-                Musterstraße 123
+                Am Lindenbusch 22 a
                 <br />
-                12345 Berlin
+                50354 Hürth
                 <br />
-                E-Mail: hello@focuscall.ai
+                Deutschland
+                <br /><br />
+                E-Mail: support@focuscall.ai
               </p>
             </section>
 
@@ -115,7 +117,7 @@ export default function Datenschutz() {
                 <li>Datenübertragbarkeit zu verlangen</li>
               </ul>
               <p>
-                Kontaktieren Sie uns hierzu unter: hello@focuscall.ai
+                Kontaktieren Sie uns hierzu unter: support@focuscall.ai
               </p>
             </section>
 
@@ -168,7 +170,7 @@ export default function Datenschutz() {
             <span className="font-semibold">FocusCall</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} FocusCall. Alle Rechte vorbehalten.
+            © {new Date().getFullYear()} focuscall UG. Alle Rechte vorbehalten.
           </p>
           <div className="flex gap-6 text-xs text-muted-foreground">
             <a href="/impressum" className="hover:text-foreground transition-colors">Impressum</a>
