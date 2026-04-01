@@ -55,7 +55,7 @@ export default function Home() {
 
   useEffect(() => {
     // scrollbasiert mit 1s delay
-    let t: ReturnType<typeof setTimeout>;
+    let t: ReturnType<typeof setTimeout> | null = null;
 
     const handleScroll = () => {
       const el = solutionRef.current;
@@ -67,7 +67,7 @@ export default function Home() {
       // um 30% nach hinten verschoben
       const progress = Math.max(0, Math.min(1, (rawProgress - 0.3) / 0.7));
       const target = Math.round(progress * 24);
-      clearTimeout(t);
+      if (t) clearTimeout(t);
       if (target < activeKwRef.current) {
         // rückwärts → sofort
         activeKwRef.current = target;
@@ -79,7 +79,7 @@ export default function Home() {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => { clearTimeout(t); window.removeEventListener('scroll', handleScroll); };
+    return () => { if (t) clearTimeout(t); window.removeEventListener('scroll', handleScroll); };
   }, []);
 
   useEffect(() => {
