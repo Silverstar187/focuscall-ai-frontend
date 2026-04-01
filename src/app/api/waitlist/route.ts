@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-// ⚠️ For testing: Using hardcoded key. In production, use: process.env.RESEND_API_KEY
-const resend = new Resend('re_NFznWM1W_QNZ8NdHrQkSoPNyGHyB9qYoB');
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function POST(request: NextRequest) {
   try {

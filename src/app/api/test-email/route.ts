@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
-// ⚠️ SECURITY WARNING: Never commit real API keys to git!
-// This is for testing only. Use process.env.RESEND_API_KEY in production.
-const resend = new Resend('re_NFznWM1W_QNZ8NdHrQkSoPNyGHyB9qYoB');
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function GET() {
+  if (!resend) {
+    return NextResponse.json({ success: false, error: 'RESEND_API_KEY not set' }, { status: 500 });
+  }
+
   try {
     const data = await resend.emails.send({
       from: 'onboarding@resend.dev',
