@@ -127,10 +127,31 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
+      {/* Header mit Language Toggle */}
+      <header className="absolute top-0 left-0 right-0 z-50 px-6 py-4 lg:px-12">
+        <div className="mx-auto max-w-6xl flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Brain className="h-6 w-6 text-primary" />
+            <span className="font-semibold text-lg">FocusCall</span>
+          </div>
+          <div className="flex items-center gap-1 bg-background/80 backdrop-blur-sm rounded-full p-1 border">
+            <button className="px-3 py-1 text-sm font-medium bg-primary text-primary-foreground rounded-full">
+              DE
+            </button>
+            <button 
+              className="px-3 py-1 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => alert('English version coming soon!')}
+            >
+              EN
+            </button>
+          </div>
+        </div>
+      </header>
+
       {/* ═══════════════════════════════════════════════════════════════
            SECTION 1: HERO
            ═══════════════════════════════════════════════════════════════ */}
-      <section className="relative px-6 pt-24 pb-16 lg:px-12 lg:pt-32 lg:pb-24 overflow-hidden">
+      <section className="relative px-6 pt-32 pb-16 lg:px-12 lg:pt-40 lg:pb-24 overflow-hidden">
         {/* Video Background - 10% opacity, 100% speed, nur obere Hälfte */}
         <div className="absolute inset-0 -z-20 overflow-hidden">
           <video
