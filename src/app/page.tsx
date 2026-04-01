@@ -208,7 +208,7 @@ export default function Home() {
               <h3 className="mb-3 font-semibold text-xl">Sag, was dich gerade blockiert</h3>
               <p className="text-muted-foreground">
                 Per Voice oder Chat — beschreib einfach, wie es dir gerade geht. 
-                "Ich hab 10 Sachen zu tun und kann mit keiner anfangen." 
+                &quot;Ich hab 10 Sachen zu tun und kann mit keiner anfangen.&quot; 
                 Dein Coach versteht den Kontext.
               </p>
             </div>
