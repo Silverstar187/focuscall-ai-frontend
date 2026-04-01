@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     if (resend) {
       // Send confirmation email to user
       await resend.emails.send({
-        from: 'FocusCall <noreply@focuscall.ai>',
+        from: 'FocusCall <onboarding@resend.dev>',
         to: email,
         subject: lang === 'de' 
           ? 'Du bist auf der FocusCall Warteliste!' 
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       // Send notification to support
       await resend.emails.send({
         from: 'FocusCall Waitlist <noreply@focuscall.ai>',
-        to: 'support@focuscall.ai',
+        to: 'oliver.spitzkat@gmail.com',
         subject: `Neue Wartelisten-Anmeldung: ${email}`,
         html: `
           <h2>Neue Anmeldung auf der Warteliste</h2>
