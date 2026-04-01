@@ -6,7 +6,16 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 
 export default function Impressum() {
-  const [lang, setLang] = useState<"de" | "en">("de");
+  const [lang, setLang] = useState<"de" | "en">(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('focuscall-lang') as "de" | "en") || "de";
+    }
+    return "de";
+  });
+
+  useEffect(() => {
+    localStorage.setItem('focuscall-lang', lang);
+  }, [lang]);
 
   return (
     <main className="min-h-screen bg-background">

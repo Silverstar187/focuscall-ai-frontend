@@ -155,7 +155,16 @@ const translations = {
 };
 
 export default function Home() {
-  const [lang, setLang] = useState<"de" | "en">("de");
+  const [lang, setLang] = useState<"de" | "en">(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('focuscall-lang') as "de" | "en") || "de";
+    }
+    return "de";
+  });
+
+  useEffect(() => {
+    localStorage.setItem('focuscall-lang', lang);
+  }, [lang]);
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
