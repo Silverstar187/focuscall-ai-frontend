@@ -346,9 +346,8 @@ export default function Home() {
             Dein persönlicher ADHS-Coach — immer verfügbar
           </p>
           <div className="flex gap-6 text-xs text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">Impressum</a>
-            <a href="#" className="hover:text-foreground transition-colors">Datenschutz</a>
-            <a href="#" className="hover:text-foreground transition-colors">Kontakt</a>
+            <a href="/impressum" className="hover:text-foreground transition-colors">Impressum</a>
+            <a href="/datenschutz" className="hover:text-foreground transition-colors">Datenschutz</a>
           </div>
         </div>
       </footer>
