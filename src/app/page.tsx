@@ -547,7 +547,7 @@ export default function Home() {
                 { icon: Target, title: t.module1Title, author: t.module1Author, desc: t.module1Desc },
                 { icon: Wallet, title: t.module2Title, author: t.module2Author, desc: t.module2Desc },
                 { icon: Moon, title: t.module3Title, author: t.module3Author, desc: t.module3Desc },
-                { icon: CalendarDays, title: t.module4Title, author: t.module4Author, desc: t.module4Desc },
+                { icon: CalendarDays, title: t.module4Title, author: t.module4Author, desc: lang === 'de' ? 'Morgen-Routinen, Wochen-Planung, Tagesstruktur.' : 'Morning routines, weekly planning, switching between activities.' },
               ].map((module, i) => (
                 <Card key={i} className="overflow-hidden">
                   <CardContent className="p-4">
@@ -578,7 +578,7 @@ export default function Home() {
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
             {lang === 'de' ? 'Dein Gehirn verdient Unterstützung, die ' : 'Your brain deserves support that\'s '}
-            <span className="text-destructive underline">{lang === 'de' ? 'jetzt' : 'here now'}</span>
+            <span className="text-destructive underline" style={{ textShadow: '0 0 4px #fff, 0 0 8px #fff, 0 0 16px #fff, 0 0 32px #fff' }}>{lang === 'de' ? 'jetzt' : 'here now'}</span>
             {lang === 'de' ? ' da ist.' : '.'}
           </h2>
           <p className="mb-8 text-lg text-muted-foreground">
