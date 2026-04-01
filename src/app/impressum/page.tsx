@@ -1,5 +1,6 @@
 import { Brain } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
 export const metadata = {
   title: "Impressum | FocusCall",
@@ -11,10 +12,10 @@ export default function Impressum() {
     <main className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b px-6 py-4 lg:px-12">
-        <a href="/" className="mx-auto flex max-w-6xl items-center gap-2 hover:opacity-80 transition-opacity">
+        <Link href="/" className="mx-auto flex max-w-6xl items-center gap-2 hover:opacity-80 transition-opacity">
           <Brain className="h-6 w-6 text-primary" />
           <span className="font-semibold text-lg">FocusCall</span>
-        </a>
+        </Link>
       </header>
 
       {/* Content */}
